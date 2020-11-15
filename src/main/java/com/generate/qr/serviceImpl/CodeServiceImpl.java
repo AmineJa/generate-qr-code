@@ -1,6 +1,7 @@
 package com.generate.qr.serviceImpl;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -26,13 +27,26 @@ public class CodeServiceImpl implements CodeService {
 
 	@Override
 	public String generateCode(String data) throws Exception {
+		String baseDirectory = "QR_directory/";
 
-		String path = "H:\\QR_directory\\".concat(String.valueOf((LocalDateTime.now()).toEpochSecond(ZoneOffset.UTC)))
+		String absolutePath = createDirectory(baseDirectory);
+		String path = absolutePath.concat("/" + String.valueOf((LocalDateTime.now()).toEpochSecond(ZoneOffset.UTC)))
 				.concat(".jpg");
 
 		BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, 500, 500);
 		MatrixToImageWriter.writeToPath(matrix, "jpg", Paths.get(path));
+
 		return path;
+	}
+
+	private String createDirectory(String baseDirectory) {
+
+		File directory = new File(String.valueOf(baseDirectory));
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
+		return directory.getAbsolutePath();
+
 	}
 
 	@Override
